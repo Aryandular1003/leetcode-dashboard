@@ -11,16 +11,7 @@ A responsive web application that allows users to search any LeetCode username a
  Fully responsive for mobile, tablet & desktop
  Fast and lightweight UI
  
- #Built With:(HTML,CSS,JavaScript,LeetCode API
-
-How to Run Locally
-
-Clone the repository
-
-git clone https://github.com/Aryandular1003/leetcode-stats-tracker.git
-
-
-Open index.html in browser
+ #Built With:(HTML,CSS,JavaScript,LeetCode API)
 
  #Author
  Aryan Kumar
