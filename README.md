@@ -17,7 +17,7 @@ How to Run Locally
 
 Clone the repository
 
-git clone https://github.com/your-username/leetcode-stats-tracker.git
+git clone https://github.com/Aryandular1003/leetcode-stats-tracker.git
 
 
 Open index.html in browser
