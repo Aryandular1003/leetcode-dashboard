@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded",function(){
     }
         
    async function fenchUserDetails(username) {
-    const url = `https://leetcode-stats.tashif.codes/${username}/profile`;
+    const url = `curl https://leetcode-stats.tashif.codes/${username}/profile
+`;
 
     try {
         statsContainer.style.display = "none"; 
