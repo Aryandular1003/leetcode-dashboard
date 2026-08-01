@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchUserDetails(username) {
 
-        const url = `https://leetcode-stats.tashif.codes/${username}/profile`;
+        const url = `https://leetcode-stats.tashif.codes/${username}/stats`;
 
         try {
 
