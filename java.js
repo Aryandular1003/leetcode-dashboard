@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded",function(){
     }
         
    async function fenchUserDetails(username) {
-    const url = `https://leetcode-stats-api.herokuapp.com/${username}`;
+    const url = `https://alfa-leetcode-api.onrender.com/${username}/profile`;
 
     try {
         statsContainer.style.display = "none"; 
