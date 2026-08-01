@@ -1,114 +1,157 @@
-document.addEventListener("DOMContentLoaded",function(){
+document.addEventListener("DOMContentLoaded", function () {
 
     const searchButton = document.getElementById("search-button");
-    const usernameInput  = document.getElementById("user-input");
+    const usernameInput = document.getElementById("user-input");
+
     const statsContainer = document.querySelector(".stats-container");
+
     const easyProgressCircle = document.querySelector(".easy-progress");
     const mediumProgressCircle = document.querySelector(".medium-progress");
     const hardProgressCircle = document.querySelector(".hard-progress");
+
     const easyLabel1 = document.getElementById("easy-label");
     const mediumLabel1 = document.getElementById("medium-label");
     const hardLabel1 = document.getElementById("hard-label");
+
     const cardStatsContainer = document.querySelector(".stats-card");
 
     statsContainer.style.display = "none";
 
-    function validateUsername(username){
-        if(username.trim() === ""){
+    // Validate Username
+    function validateUsername(username) {
+        if (username.trim() === "") {
             alert("Username should not be empty");
             return false;
         }
+
         const regex = /^[a-zA-Z0-9_]{1,30}$/;
-        const isMatching = regex.test(username);
-        if(!isMatching){
+
+        if (!regex.test(username)) {
             alert("Invalid Username");
-        }
-        return isMatching;
-    }
-        
-   async function fenchUserDetails(username) {
-    const url = `curl https://leetcode-stats.tashif.codes/${username}/profile
-`;
-
-    try {
-        statsContainer.style.display = "none"; 
-        searchButton.textContent = "Searching...";
-        searchButton.disabled = true;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        console.log("API Data:", data);
-
-        if (!response.ok || !data || data.errors) {
-            alert("User not found");
-            return;
+            return false;
         }
 
-        displayUserData(data);
-        statsContainer.style.display = "block"; 
-
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Something went wrong");
-    } finally {
-        searchButton.textContent = "Search";
-        searchButton.disabled = false;
+        return true;
     }
-}
 
+    // Fetch User Details
+    async function fenchUserDetails(username) {
 
+        const url = `https://leetcode-stats.tashif.codes/${username}/profile`;
+
+        try {
+
+            statsContainer.style.display = "none";
+            searchButton.textContent = "Searching...";
+            searchButton.disabled = true;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("User not found");
+            }
+
+            const data = await response.json();
+
+            console.log("API Response:", data);
+
+            displayUserData(data);
+
+            statsContainer.style.display = "block";
+
+        } catch (error) {
+            console.error(error);
+            alert("Failed to fetch user details.");
+        } finally {
+            searchButton.textContent = "Search";
+            searchButton.disabled = false;
+        }
+    }
+
+    // Update Circular Progress
     function updateProgress(solved, total, label, circle) {
-        if(!total || total === 0){
-            circle.style.setProperty("--progress-degree", `0%`);
-            label.textContent = `0/0`;
+
+        if (!total || total === 0) {
+            circle.style.setProperty("--progress-degree", "0%");
+            label.textContent = "0/0";
             return;
         }
-        const progressDegree = (solved / total) * 100;
-        circle.style.setProperty("--progress-degree", `${progressDegree}%`);
+
+        const progress = (solved / total) * 100;
+
+        circle.style.setProperty("--progress-degree", `${progress}%`);
         label.textContent = `${solved}/${total}`;
     }
 
-    function displayUserData(passedData){
+    // Display User Data
+    function displayUserData(data) {
 
-        const totalHardQues = passedData.totalHard;
-        const totalMediumQues = passedData.totalMedium;
-        const totalEasyQues = passedData.totalEasy;
+        const totalEasy = data.totalEasy;
+        const totalMedium = data.totalMedium;
+        const totalHard = data.totalHard;
 
-        const myEasySolved = passedData.easySolved;
-        const myMediumSolved = passedData.mediumSolved;
-        const myHardSolved = passedData.hardSolved;   
+        const easySolved = data.easySolved;
+        const mediumSolved = data.mediumSolved;
+        const hardSolved = data.hardSolved;
 
-        updateProgress(myEasySolved, totalEasyQues, easyLabel1, easyProgressCircle);
-        updateProgress(myMediumSolved, totalMediumQues, mediumLabel1, mediumProgressCircle);
-        updateProgress(myHardSolved, totalHardQues, hardLabel1, hardProgressCircle);
+        updateProgress(
+            easySolved,
+            totalEasy,
+            easyLabel1,
+            easyProgressCircle
+        );
+
+        updateProgress(
+            mediumSolved,
+            totalMedium,
+            mediumLabel1,
+            mediumProgressCircle
+        );
+
+        updateProgress(
+            hardSolved,
+            totalHard,
+            hardLabel1,
+            hardProgressCircle
+        );
 
         cardStatsContainer.innerHTML = `
             <div class="stat-card">
 
                 <div class="user-info">
-                    <h3>Total Solved</h3>   
-                    <p>${passedData.totalSolved}</p>
+                    <h3>Total Solved</h3>
+                    <p>${data.totalSolved}</p>
                 </div>
 
                 <div class="user-info">
                     <h3>Acceptance Rate</h3>
-                    <p>${passedData.acceptanceRate}%</p>
+                    <p>${data.acceptanceRate}%</p>
                 </div>
 
                 <div class="user-info">
                     <h3>Ranking</h3>
-                    <p>${passedData.ranking}</p>
+                    <p>${data.ranking}</p>
                 </div>
 
-            </div>      
+            </div>
         `;
     }
 
-    searchButton.addEventListener("click", function() {
-        const username = usernameInput.value;
-        if(validateUsername(username)){
+    // Search Button Click
+    searchButton.addEventListener("click", () => {
+
+        const username = usernameInput.value.trim();
+
+        if (validateUsername(username)) {
             fenchUserDetails(username);
+        }
+
+    });
+
+    // Press Enter to Search
+    usernameInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            searchButton.click();
         }
     });
 
