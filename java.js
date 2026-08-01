@@ -9,16 +9,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const mediumProgressCircle = document.querySelector(".medium-progress");
     const hardProgressCircle = document.querySelector(".hard-progress");
 
-    const easyLabel1 = document.getElementById("easy-label");
-    const mediumLabel1 = document.getElementById("medium-label");
-    const hardLabel1 = document.getElementById("hard-label");
+    const easyLabel = document.getElementById("easy-label");
+    const mediumLabel = document.getElementById("medium-label");
+    const hardLabel = document.getElementById("hard-label");
 
     const cardStatsContainer = document.querySelector(".stats-card");
 
     statsContainer.style.display = "none";
 
-    // Validate Username
     function validateUsername(username) {
+
         if (username.trim() === "") {
             alert("Username should not be empty");
             return false;
@@ -34,48 +34,42 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
-    // Fetch User Details
-    async function fenchUserDetails(username) {
+    async function fetchUserDetails(username) {
 
         const url = `https://leetcode-stats.tashif.codes/${username}/profile`;
 
         try {
 
-            statsContainer.style.display = "none";
-            searchButton.textContent = "Searching...";
             searchButton.disabled = true;
+            searchButton.textContent = "Searching...";
+            statsContainer.style.display = "none";
 
             const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error("User not found");
-            }
-
             const data = await response.json();
 
-            console.log("API Response:", data);
+            console.log(data);
+
+            if (!response.ok || data.status !== "success") {
+                throw new Error("User not found");
+            }
 
             displayUserData(data);
 
             statsContainer.style.display = "block";
 
         } catch (error) {
+
             console.error(error);
-            alert("Failed to fetch user details.");
+            alert(error.message);
+
         } finally {
-            searchButton.textContent = "Search";
+
             searchButton.disabled = false;
+            searchButton.textContent = "Search";
         }
     }
 
-    // Update Circular Progress
     function updateProgress(solved, total, label, circle) {
-
-        if (!total || total === 0) {
-            circle.style.setProperty("--progress-degree", "0%");
-            label.textContent = "0/0";
-            return;
-        }
 
         const progress = (solved / total) * 100;
 
@@ -83,76 +77,74 @@ document.addEventListener("DOMContentLoaded", function () {
         label.textContent = `${solved}/${total}`;
     }
 
-    // Display User Data
     function displayUserData(data) {
 
-        const totalEasy = data.totalEasy;
-        const totalMedium = data.totalMedium;
-        const totalHard = data.totalHard;
+        const solved = data.submitStats.acSubmissionNum;
 
-        const easySolved = data.easySolved;
-        const mediumSolved = data.mediumSolved;
-        const hardSolved = data.hardSolved;
+        const totalSolved = solved[0].count;
+        const easySolved = solved[1].count;
+        const mediumSolved = solved[2].count;
+        const hardSolved = solved[3].count;
 
-        updateProgress(
-            easySolved,
-            totalEasy,
-            easyLabel1,
-            easyProgressCircle
-        );
+        // Current LeetCode totals
+        const totalEasy = 890;
+        const totalMedium = 1860;
+        const totalHard = 940;
 
-        updateProgress(
-            mediumSolved,
-            totalMedium,
-            mediumLabel1,
-            mediumProgressCircle
-        );
-
-        updateProgress(
-            hardSolved,
-            totalHard,
-            hardLabel1,
-            hardProgressCircle
-        );
+        updateProgress(easySolved, totalEasy, easyLabel, easyProgressCircle);
+        updateProgress(mediumSolved, totalMedium, mediumLabel, mediumProgressCircle);
+        updateProgress(hardSolved, totalHard, hardLabel, hardProgressCircle);
 
         cardStatsContainer.innerHTML = `
+        
             <div class="stat-card">
 
                 <div class="user-info">
-                    <h3>Total Solved</h3>
-                    <p>${data.totalSolved}</p>
+                    <h3>Username</h3>
+                    <p>${data.username}</p>
                 </div>
 
                 <div class="user-info">
-                    <h3>Acceptance Rate</h3>
-                    <p>${data.acceptanceRate}%</p>
+                    <h3>Total Solved</h3>
+                    <p>${totalSolved}</p>
                 </div>
 
                 <div class="user-info">
                     <h3>Ranking</h3>
-                    <p>${data.ranking}</p>
+                    <p>${data.profile.ranking.toLocaleString()}</p>
+                </div>
+
+                <div class="user-info">
+                    <h3>Reputation</h3>
+                    <p>${data.profile.reputation}</p>
+                </div>
+
+                <div class="user-info">
+                    <h3>Contribution Points</h3>
+                    <p>${data.contributions.points}</p>
                 </div>
 
             </div>
+
         `;
     }
 
-    // Search Button Click
-    searchButton.addEventListener("click", () => {
+    searchButton.addEventListener("click", function () {
 
         const username = usernameInput.value.trim();
 
         if (validateUsername(username)) {
-            fenchUserDetails(username);
+            fetchUserDetails(username);
         }
 
     });
 
-    // Press Enter to Search
-    usernameInput.addEventListener("keypress", (e) => {
+    usernameInput.addEventListener("keypress", function (e) {
+
         if (e.key === "Enter") {
             searchButton.click();
         }
+
     });
 
 });
