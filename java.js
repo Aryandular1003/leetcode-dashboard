@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function validateUsername(username) {
 
         if (username.trim() === "") {
-            alert("Username should not be empty");
+            alert("Username cannot be empty");
             return false;
         }
 
@@ -40,16 +40,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
 
-            searchButton.disabled = true;
             searchButton.textContent = "Searching...";
-            statsContainer.style.display = "none";
+            searchButton.disabled = true;
 
             const response = await fetch(url);
+
             const data = await response.json();
 
             console.log(data);
 
-            if (!response.ok || data.status !== "success") {
+            if (data.status !== "success") {
                 throw new Error("User not found");
             }
 
@@ -57,15 +57,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             statsContainer.style.display = "block";
 
-        } catch (error) {
+        } catch (err) {
 
-            console.error(error);
-            alert(error.message);
+            console.log(err);
+            alert("Something went wrong");
 
         } finally {
 
-            searchButton.disabled = false;
             searchButton.textContent = "Search";
+            searchButton.disabled = false;
         }
     }
 
@@ -79,12 +79,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function displayUserData(data) {
 
-        const solved = data.submitStats.acSubmissionNum;
+        const stats = data.submitStats.acSubmissionNum;
 
-        const totalSolved = solved[0].count;
-        const easySolved = solved[1].count;
-        const mediumSolved = solved[2].count;
-        const hardSolved = solved[3].count;
+        const totalSolved = stats.find(item => item.difficulty === "All").count;
+        const easySolved = stats.find(item => item.difficulty === "Easy").count;
+        const mediumSolved = stats.find(item => item.difficulty === "Medium").count;
+        const hardSolved = stats.find(item => item.difficulty === "Hard").count;
 
         // Current LeetCode totals
         const totalEasy = 890;
@@ -97,35 +97,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cardStatsContainer.innerHTML = `
         
-            <div class="stat-card">
-
-                <div class="user-info">
-                    <h3>Username</h3>
-                    <p>${data.username}</p>
-                </div>
-
-                <div class="user-info">
-                    <h3>Total Solved</h3>
-                    <p>${totalSolved}</p>
-                </div>
-
-                <div class="user-info">
-                    <h3>Ranking</h3>
-                    <p>${data.profile.ranking.toLocaleString()}</p>
-                </div>
-
-                <div class="user-info">
-                    <h3>Reputation</h3>
-                    <p>${data.profile.reputation}</p>
-                </div>
-
-                <div class="user-info">
-                    <h3>Contribution Points</h3>
-                    <p>${data.contributions.points}</p>
-                </div>
-
+            <div class="user-info">
+                <h3>Username</h3>
+                <p>${data.username}</p>
             </div>
 
+            <div class="user-info">
+                <h3>Total Solved</h3>
+                <p>${totalSolved}</p>
+            </div>
+
+            <div class="user-info">
+                <h3>Ranking</h3>
+                <p>${data.profile.ranking.toLocaleString()}</p>
+            </div>
+
+            <div class="user-info">
+                <h3>Contribution Points</h3>
+                <p>${data.contributions.points}</p>
+            </div>
+
+            <div class="user-info">
+                <h3>Reputation</h3>
+                <p>${data.profile.reputation}</p>
+            </div>
+
+            <div class="user-info">
+                <h3>Real Name</h3>
+                <p>${data.profile.realName || "N/A"}</p>
+            </div>
         `;
     }
 
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
-    usernameInput.addEventListener("keypress", function (e) {
+    usernameInput.addEventListener("keydown", function (e) {
 
         if (e.key === "Enter") {
             searchButton.click();
