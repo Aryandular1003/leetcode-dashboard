@@ -18,6 +18,7 @@
                 <input type="text" placeholder="Enter your username" id="user-input">
                 <button id="search-button">Search</button>
             </div>
+            <p id="error-message" class="error-message"></p>
         </div>
 
         <div class="stats-container">
@@ -25,28 +26,28 @@
             <div class="progress">
                 <div class="progress-item">
                     <div class="easy-progress circle">
-                        <span id="easy-label"></span>
-                        Easy
+                        <span id="easy-label">0/0</span>
+                        <p class="difficulty-title">Easy</p>
                     </div>
                 </div>
 
                 <div class="progress-item">
                     <div class="medium-progress circle">
-                        <span id="medium-label"></span>
-                        Medium
+                        <span id="medium-label">0/0</span>
+                        <p class="difficulty-title">Medium</p>
                     </div>
                 </div>
 
                 <div class="progress-item">
                     <div class="hard-progress circle">
-                        <span id="hard-label"></span>
-                        Hard
+                        <span id="hard-label">0/0</span>
+                        <p class="difficulty-title">Hard</p>
                     </div>
                 </div>
             </div>
 
             <div class="stats-card">
-                <!-- JS will add stats here -->
+                <!-- JS will insert user stats here -->
             </div>
 
         </div>
